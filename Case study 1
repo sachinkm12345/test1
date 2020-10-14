@@ -1,0 +1,120 @@
+i.	Business Unit           
+ii.	Invoice Number      AP_INVOICES_ALL.INVOICE_NUM
+iii.	Invoice Date             AP_INVOICES_ALL.INVOICE_DATE
+iv.	Payment Terms        AP_INVOICES_ALL.TERMS_ID
+v.	Supplier                       AP_SUPPLIER_BALANCE_ITF 
+vi.	Supplier Site              POZ_SUPPLIER_SITES_ALL_M.VENDOR_ID  
+vii.	Total Amount            AP_INVOICES_ALL. INVOICE_AMOUNT
+viii.	Unpaid Amount         
+
+
+
+
+====================================  MAIN SHEET:
+SELECT A.INVOICE_ID ,
+       BU.NAME,
+       A.INVOICE_NUM,
+       A.INVOICE_DATE,
+       TER.NAME AS TERM,
+       HZ.PARTY_NAME AS SUPPLIER,
+       PS.PARTY_SITE_NAME SUPPLIER_SITE,
+       A.INVOICE_AMOUNT,
+       SCH.AMOUNT_REMAINING
+
+FROM
+     HR_ORGANIZATION_UNITS_F_TL BU,
+     AP_INVOICES_ALL A,
+     HZ_PARTIES HZ,
+     HZ_PARTY_SITES PS,
+     AP_TERMS_TL  TER,
+     AP_PAYMENT_SCHEDULES_ALL SCH
+
+WHERE  BU.ORGANIZATION_ID =  A.ORG_ID
+AND   A.PARTY_ID=   HZ.PARTY_ID 
+AND   HZ.IDEN_ADDR_PARTY_SITE_ID =  PS.PARTY_SITE_ID
+AND   A.TERMS_ID = TER.TERM_ID
+AND   A.INVOICE_ID = SCH.INVOICE_ID
+AND BU.NAME IN (:P_BU)
+AND A.INVOICE_NUM IN (:P_INVOICE_NUM)
+AND HZ.PARTY_NAME IN (:P_PARTY_NAME)
+AND A.INVOICE_DATE BETWEEN (:P_FROM) AND (:P_TO)
+AND PS.PARTY_SITE_NAME IN (:P_SITE)
+
+
+i.	Business Unit (Optional)
+ii.	Invoice Number (Optional)
+iii.	Supplier (Optional)
+iv.	Supplier Site (Dependent parameter on Supplier, should be refreshed when supplier is changed) (Optional)
+v.	From Date (Mandatory)
+vi.	To Date (Mandatory)
+
+======================================================== data set 2 (details page)
+i.	Business Unit 
+ii.	Invoice Number 
+iii.	Line Number
+iv.	Invoice Date
+v.	Ship-to Location
+vi.	Supplier
+vii.	Supplier Site
+viii.	Line Amount
+ix.	Invoiced Quantity
+x.	Line Description UOM
+
+
+SELECT 
+       A.INVOICE_ID,
+       BU.NAME,
+       A.INVOICE_NUM,
+       LA.LINE_NUMBER,
+       A.INVOICE_DATE,
+       L.ADDRESS1 || L.ADDRESS2 || L.ADDRESS3 || L.ADDRESS4 || L.CITY || L.STATE || L.COUNTRY AS ADDRESS,
+       HZ.PARTY_NAME,
+       PS.PARTY_SITE_NAME,
+       LA.AMOUNT,
+       LA.QUANTITY_INVOICED,
+       LA.UNIT_MEAS_LOOKUP_CODE
+
+
+FROM
+     HR_ORGANIZATION_UNITS_F_TL BU,
+     AP_INVOICES_ALL A,
+     AP_INVOICE_LINES_ALL LA,
+     HZ_PARTIES HZ,
+     HZ_PARTY_SITES PS,
+     AP_TERMS_TL  TER,
+     AP_PAYMENT_SCHEDULES_ALL SCH,
+     HZ_LOCATIONS L
+
+WHERE  BU.ORGANIZATION_ID =  A.ORG_ID
+AND   A.INVOICE_ID = LA.INVOICE_ID
+AND   A.PARTY_ID=   HZ.PARTY_ID 
+AND   HZ.IDEN_ADDR_PARTY_SITE_ID =  PS.PARTY_SITE_ID
+AND   A.TERMS_ID = TER.TERM_ID
+AND   A.INVOICE_ID = SCH.INVOICE_ID
+AND L.LOCATION_ID = LA.SHIP_TO_LOCATION_ID
+==================================
+
+OLD:
+SELECT BU.NAME,
+      A.INVOICE_ID,
+       A.INVOICE_NUM,
+       A.INVOICE_DATE,
+       TER.NAME as Term,
+       HZ.PARTY_NAME,
+       PS.PARTY_SITE_NAME,
+       A.INVOICE_AMOUNT,
+       SCH.AMOUNT_REMAINING
+
+FROM
+     HR_ORGANIZATION_UNITS_F_TL BU,
+     AP_INVOICES_ALL A,
+     HZ_PARTIES HZ,
+     HZ_PARTY_SITES PS,
+     AP_TERMS_TL  TER,
+     AP_PAYMENT_SCHEDULES_ALL SCH
+
+WHERE  BU.ORGANIZATION_ID =  A.ORG_ID
+AND   A.PARTY_ID=   HZ.PARTY_ID 
+AND   HZ.IDEN_ADDR_PARTY_SITE_ID =  PS.PARTY_SITE_ID
+AND   A.TERMS_ID = TER.TERM_ID
+AND   A.INVOICE_ID = SCH.INVOICE_ID
