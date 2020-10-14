@@ -71,25 +71,6 @@ WHERE (:P_BU_NAME) IS NULL
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 [‎9/‎30/‎2020 12:20 PM]  Parab, Sonal Sanjay:  
 No Title 
 select distinct
@@ -119,4 +100,10 @@ and acra.STATUS = 'APP'
 and (fabuv.BU_NAME in (:p_bu) OR LEAST(:p_bu) IS NULL)
 and acra.receipt_date between (:p_from_date) and (:p_to_date)
 and acra.RECEIPT_NUMBER = NVL(:p_receipt_num, acra.RECEIPT_NUMBER) 
+
+
+
+===============================================================
+change1 for testing
+
  
